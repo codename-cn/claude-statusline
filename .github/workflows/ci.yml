@@ -1,0 +1,94 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run shellcheck
+        run: |
+          shellcheck --version
+          shellcheck statusline.sh scripts/install.sh
+
+  shfmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install shfmt
+        run: |
+          curl -fsSL -o /usr/local/bin/shfmt \
+            https://github.com/mvdan/sh/releases/download/v3.8.0/shfmt_v3.8.0_linux_amd64
+          chmod +x /usr/local/bin/shfmt
+      - name: Check formatting
+        run: shfmt -d -i 4 -ci -sr statusline.sh scripts/install.sh
+
+  smoke-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Smoke test with synthetic payload
+        run: |
+          set -euo pipefail
+          sudo apt-get update && sudo apt-get install -y jq
+          output=$(echo '{
+            "cwd": "/tmp",
+            "version": "2.1.200",
+            "model": {"display_name": "Opus 4.7"},
+            "effort": {"level": "high"},
+            "thinking": {"enabled": false},
+            "cost": {"total_duration_ms": 3720000},
+            "context_window": {"used_percentage": 34, "context_window_size": 200000},
+            "rate_limits": {
+              "five_hour": {"used_percentage": 45, "resets_at": 9999999999},
+              "seven_day": {"used_percentage": 62, "resets_at": 9999999999}
+            }
+          }' | bash statusline.sh)
+          echo "$output"
+          test -n "$output" || (echo "statusline produced empty output"; exit 1)
+      - name: NO_COLOR smoke test
+        env:
+          NO_COLOR: "1"
+        run: |
+          echo '{"cwd":"/tmp","version":"x","model":{"display_name":"m"}}' \
+            | bash statusline.sh | grep -v $'\033' >/dev/null
+
+  smoke-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Smoke test with synthetic payload
+        run: |
+          set -euo pipefail
+          brew install jq || true
+          output=$(echo '{
+            "cwd": "/tmp",
+            "version": "2.1.200",
+            "model": {"display_name": "Opus 4.7"},
+            "cost": {"total_duration_ms": 60000},
+            "context_window": {"used_percentage": 10, "context_window_size": 200000},
+            "rate_limits": {
+              "five_hour": {"used_percentage": 20, "resets_at": 9999999999},
+              "seven_day": {"used_percentage": 30, "resets_at": 9999999999}
+            }
+          }' | bash statusline.sh)
+          echo "$output"
+          test -n "$output" || (echo "statusline produced empty output on macOS"; exit 1)
+
+  bats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install jq + bats
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq bats
+          bats --version
+      - name: Run tests
+        run: bats tests/
+
