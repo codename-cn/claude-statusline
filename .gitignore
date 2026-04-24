@@ -1,0 +1,19 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Internal docs / scratch — authoring notes, plans, specs that should never
+# ship with the published repo.
+.claude/
+.agent-notes/
+CLAUDE.md
+
+# Local git worktrees for isolated development
+.worktrees/

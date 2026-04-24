@@ -1,0 +1,46 @@
+# .github/workflows/release.yml
+#
+# Cut a GitHub release whenever a v*.*.* tag lands. Attaches the single
+# statusline.sh + installer so users can download them without a clone.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Extract version
+        id: v
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+
+      - name: Extract changelog section
+        id: notes
+        run: |
+          # Pull the block from `## [X.Y.Z]` until the next `## [` or EOF.
+          awk -v ver="${{ steps.v.outputs.version }}" '
+            $0 ~ "^## \\[" ver "\\]" {p=1; next}
+            p && /^## \[/ {exit}
+            p {print}
+          ' CHANGELOG.md > /tmp/notes.md
+          echo "--- notes ---"
+          cat /tmp/notes.md
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
+            --notes-file /tmp/notes.md \
+            statusline.sh scripts/install.sh
