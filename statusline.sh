@@ -250,7 +250,6 @@ PEAKTIME_END_UTC=19   # exclusive
 # Forecast window lengths. Used by compute_forecast() to derive elapsed time
 # from a reset timestamp (window_start = reset_ts - window_length).
 FORECAST_WINDOW_5H=$((5 * 3600))
-# shellcheck disable=SC2034  # wired into week_segment build below
 FORECAST_WINDOW_7D=$((7 * 86400))
 
 _emit_peaktime_label() {
@@ -474,6 +473,11 @@ if [ -n "$rl_7d" ]; then
     _color=$(gradient_color_at_pct "$_rl7")
     week_segment="$(rate_limit_bar "$_rl7") ${_color}$(printf '%d%%' "$_rl7")${RESET}"
     [ -n "$rl_7d_reset" ] && week_segment+=" $(format_weekly_reset "$rl_7d_reset")"
+    _fcst7=$(compute_forecast "$_rl7" "$rl_7d_reset" "$FORECAST_WINDOW_7D")
+    if [ -n "$_fcst7" ]; then
+        _fcst_color=$(gradient_color_at_pct "$_fcst7")
+        week_segment+=" [${_fcst_color}→${_fcst7}%${RESET}]"
+    fi
 fi
 
 peaktime_segment=$(render_peaktime_segment)
