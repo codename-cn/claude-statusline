@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Peak-hours indicator is now opt-in and disabled by default. Enable it with
+  `CLAUDE_STATUSLINE_PEAKTIME=1`. The previous `CLAUDE_STATUSLINE_PEAKTIME_HIDDEN`
+  flag has been removed — the rendering code is unchanged and remains available
+  behind the new opt-in.
+
 ## [0.1.0] — 2026-04-24
 
 Initial public release.
