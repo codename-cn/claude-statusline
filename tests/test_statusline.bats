@@ -172,3 +172,14 @@ setup() {
     [ "$status" -eq 0 ]
     [[ "$output" == *"[→75%]"* ]]
 }
+
+@test "weekly forecast bracket renders by default with a usable reset_ts" {
+    # 30% used, 4 days remaining of a 7d window → 3d elapsed.
+    # forecast = 30 * 604800 / (3*86400) = 30 * 604800 / 259200 = 70%.
+    local now reset
+    now=$(date +%s)
+    reset=$((now + 4 * 86400))
+    run bash -c "echo '{\"cwd\":\"/tmp\",\"rate_limits\":{\"seven_day\":{\"used_percentage\":30,\"resets_at\":$reset}}}' | bash '$SCRIPT'"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[→70%]"* ]]
+}
