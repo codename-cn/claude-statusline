@@ -22,6 +22,9 @@
 #   CLAUDE_STATUSLINE_SHOW_TZ=1         Append timezone abbr (e.g. CEST) to reset times.
 #   CLAUDE_STATUSLINE_PEAKTIME=1        Show the peak-hours indicator
 #                                       (default: hidden — opt-in).
+#   CLAUDE_STATUSLINE_FORECAST=0        Suppress the per-window forecast bracket
+#                                       [→XX%] on the 5h and weekly segments
+#                                       (default: shown).
 #   CLAUDE_STATUSLINE_FORCE_12H=1       Force 12-hour clock (default: follow locale).
 #   CLAUDE_STATUSLINE_FORCE_24H=1       Force 24-hour clock (default: follow locale).
 #   CLAUDE_STATUSLINE_DEMO=1            Demo mode: override all quota %, reset
