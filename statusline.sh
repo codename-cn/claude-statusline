@@ -247,6 +247,12 @@ format_weekly_reset() {
 PEAKTIME_START_UTC=13 # inclusive
 PEAKTIME_END_UTC=19   # exclusive
 
+# Forecast window lengths. Used by compute_forecast() to derive elapsed time
+# from a reset timestamp (window_start = reset_ts - window_length).
+FORECAST_WINDOW_5H=$((5 * 3600))
+# shellcheck disable=SC2034  # wired into week_segment build below
+FORECAST_WINDOW_7D=$((7 * 86400))
+
 _emit_peaktime_label() {
     local peaktime_end=$1
     local delta=$((peaktime_end - _NOW))
@@ -425,6 +431,29 @@ if [ "$duration_ms" -gt 0 ] 2> /dev/null; then
     duration_info=$(printf '%d:%02d' $((_total_min / 60)) $((_total_min % 60)))
 fi
 
+# Linear forecast of where the percentage will land at window reset if the
+# current burn rate continues. Stateless — relies only on the values present
+# in this refresh.
+#
+# Args: current_pct, resets_at_epoch, window_length_seconds
+# Echoes integer forecast pct (0..999), or nothing if not computable.
+compute_forecast() {
+    local pct=$1 reset_ts=$2 window=$3
+    [ -z "$pct" ] || [ -z "$reset_ts" ] && return
+    # Stale JSON or exactly-at-reset: no usable elapsed time.
+    [ "$reset_ts" -le "$_NOW" ] 2> /dev/null && return
+    local elapsed=$((window - (reset_ts - _NOW)))
+    # Defensive: fresh window (reset_ts == _NOW + window) → elapsed == 0.
+    [ "$elapsed" -le 0 ] && return
+    [ "$pct" -le 0 ] 2> /dev/null && {
+        printf '0'
+        return
+    }
+    local forecast=$((pct * window / elapsed))
+    [ "$forecast" -gt 999 ] && forecast=999
+    printf '%d' "$forecast"
+}
+
 # 5-hour and weekly rate-limit segments (line 3).
 five_segment=""
 if [ -n "$rl_5h" ]; then
@@ -432,6 +461,11 @@ if [ -n "$rl_5h" ]; then
     _color=$(gradient_color_at_pct "$_rl5")
     five_segment="$(rate_limit_bar "$_rl5") ${_color}$(printf '%d%%' "$_rl5")${RESET}"
     [ -n "$rl_5h_reset" ] && five_segment+=" $(format_5h_reset "$rl_5h_reset")"
+    _fcst5=$(compute_forecast "$_rl5" "$rl_5h_reset" "$FORECAST_WINDOW_5H")
+    if [ -n "$_fcst5" ]; then
+        _fcst_color=$(gradient_color_at_pct "$_fcst5")
+        five_segment+=" [${_fcst_color}→${_fcst5}%${RESET}]"
+    fi
 fi
 
 week_segment=""
