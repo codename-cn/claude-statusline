@@ -199,3 +199,47 @@ setup() {
     # But no forecast brackets.
     [[ "$output" != *"[→"* ]]
 }
+
+@test "stale reset_ts in the past suppresses the 5h forecast bracket" {
+    # reset_ts already 5 minutes ago — JSON not yet refreshed.
+    local now reset
+    now=$(date +%s)
+    reset=$((now - 300))
+    run bash -c "echo '{\"cwd\":\"/tmp\",\"rate_limits\":{\"five_hour\":{\"used_percentage\":50,\"resets_at\":$reset}}}' | bash '$SCRIPT'"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"[→"* ]]
+}
+
+@test "missing resets_at suppresses only the affected segment's bracket" {
+    # 5h has no reset_ts → no 5h bracket. Weekly has one → weekly bracket present.
+    local now reset
+    now=$(date +%s)
+    reset=$((now + 4 * 86400))
+    run bash -c "echo '{\"cwd\":\"/tmp\",\"rate_limits\":{\"five_hour\":{\"used_percentage\":50},\"seven_day\":{\"used_percentage\":30,\"resets_at\":$reset}}}' | bash '$SCRIPT'"
+    [ "$status" -eq 0 ]
+    # Weekly bracket present.
+    [[ "$output" == *"[→70%]"* ]]
+    # 5h bracket absent — no other "[→" earlier in the output. Strip the
+    # full weekly bracket and confirm no bracket prefix remains.
+    five_only="${output%%\[→70%]*}"
+    [[ "$five_only" != *"[→"* ]]
+}
+
+@test "zero usage renders [→0%]" {
+    local now reset
+    now=$(date +%s)
+    reset=$((now + 7200))
+    run bash -c "echo '{\"cwd\":\"/tmp\",\"rate_limits\":{\"five_hour\":{\"used_percentage\":0,\"resets_at\":$reset}}}' | bash '$SCRIPT'"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[→0%]"* ]]
+}
+
+@test "very fresh window with high usage caps the forecast at 999%" {
+    # 1% elapsed (180s of 18000s), but 50% already used → raw forecast 5000% → cap at 999%.
+    local now reset
+    now=$(date +%s)
+    reset=$((now + 18000 - 180))
+    run bash -c "echo '{\"cwd\":\"/tmp\",\"rate_limits\":{\"five_hour\":{\"used_percentage\":50,\"resets_at\":$reset}}}' | bash '$SCRIPT'"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[→999%]"* ]]
+}
