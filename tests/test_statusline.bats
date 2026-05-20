@@ -243,3 +243,15 @@ setup() {
     [ "$status" -eq 0 ]
     [[ "$output" == *"[→999%]"* ]]
 }
+
+@test "NO_COLOR strips ANSI from the forecast bracket too" {
+    # NO_COLOR is already set in setup(). With a usable reset_ts the bracket renders.
+    local now reset esc
+    now=$(date +%s)
+    reset=$((now + 7200))
+    run bash -c "echo '{\"cwd\":\"/tmp\",\"rate_limits\":{\"five_hour\":{\"used_percentage\":45,\"resets_at\":$reset}}}' | bash '$SCRIPT'"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[→75%]"* ]]
+    esc=$(printf '\033')
+    [[ "$output" != *"$esc"* ]]
+}
