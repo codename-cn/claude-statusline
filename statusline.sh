@@ -4,7 +4,8 @@
 # https://github.com/codename-cn/claude-statusline
 #
 # Renders on every prompt refresh:
-#   Line 1: cwd · git branch · PEAKTIME indicator (only during Anthropic's
+#   Line 1: cwd · git branch · PEAKTIME indicator (opt-in via
+#           CLAUDE_STATUSLINE_PEAKTIME=1; only during Anthropic's
 #           weekday 13:00–19:00 UTC accelerated-quota-burn window)
 #   Line 2: model · effort · version · session duration · context-window bar
 #   Line 3: 5h rate limit · weekly rate limit
@@ -19,7 +20,8 @@
 #   CLAUDE_STATUSLINE_EMPTY_HIDDEN=0    Show empty cells as dim boxes.
 #   CLAUDE_STATUSLINE_EMPTY_RGB="r;g;b" Color for empty cells when shown (default 128;128;128).
 #   CLAUDE_STATUSLINE_SHOW_TZ=1         Append timezone abbr (e.g. CEST) to reset times.
-#   CLAUDE_STATUSLINE_PEAKTIME_HIDDEN=1 Hide the peaktime indicator entirely.
+#   CLAUDE_STATUSLINE_PEAKTIME=1        Show the peak-hours indicator
+#                                       (default: hidden — opt-in).
 #   CLAUDE_STATUSLINE_FORCE_12H=1       Force 12-hour clock (default: follow locale).
 #   CLAUDE_STATUSLINE_FORCE_24H=1       Force 24-hour clock (default: follow locale).
 #   CLAUDE_STATUSLINE_DEMO=1            Demo mode: override all quota %, reset
@@ -265,7 +267,8 @@ _emit_peaktime_label() {
 }
 
 render_peaktime_segment() {
-    [ "${CLAUDE_STATUSLINE_PEAKTIME_HIDDEN:-0}" = 1 ] && return
+    # Opt-in: peak-time indicator stays hidden unless explicitly enabled.
+    [ "${CLAUDE_STATUSLINE_PEAKTIME:-0}" = 1 ] || return
 
     # Demo mode: pretend we are 3 hours before peaktime end.
     if [ "${CLAUDE_STATUSLINE_DEMO:-0}" = 1 ]; then

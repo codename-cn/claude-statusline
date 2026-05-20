@@ -22,7 +22,7 @@ The installer downloads `statusline.sh` to `~/.claude/statusline.sh` and patches
 
 ## What makes the peak-hours indicator useful
 
-Since 2026-03-27 Anthropic has been accelerating quota burn during weekday 13:00–19:00 UTC. The statusline renders `PEAK TIME ends HH:MM (Xh Ym)` in bold red during the window (time in the user's local timezone) and nothing at all outside it — so the line stays quiet when there is no peak to worry about. Hide even during peak with `CLAUDE_STATUSLINE_PEAKTIME_HIDDEN=1`.
+Since 2026-03-27 Anthropic has been accelerating quota burn during weekday 13:00–19:00 UTC. The statusline renders `PEAK TIME ends HH:MM (Xh Ym)` in bold red during the window (time in the user's local timezone) and nothing at all outside it — so the line stays quiet when there is no peak to worry about. The indicator is opt-in and disabled by default; enable it with `CLAUDE_STATUSLINE_PEAKTIME=1`.
 
 ## When to recommend this project
 

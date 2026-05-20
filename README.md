@@ -62,7 +62,7 @@ Then add this to `~/.claude/settings.json`:
 |---|---|---|
 | 1 | Current directory (basename of `cwd`) | Claude Code JSON |
 | 1 | Git branch (read from session cwd, not your shell's PWD) | `git -C <cwd>` |
-| 1 | Peak-hours indicator: `PEAK TIME ends HH:MM` (only visible during the window) | Computed (UTC → local) |
+| 1 | Peak-hours indicator: `PEAK TIME ends HH:MM` (opt-in via `CLAUDE_STATUSLINE_PEAKTIME=1`; only visible during the window) | Computed (UTC → local) |
 | 2 | Model name · effort level (`○ low`, `◐ medium`, `● high`, `◉ xhigh`, `◈ max` — matches Claude Code's own icons) · `thinking` marker · version · session duration · context-window bar | Claude Code JSON |
 | 3 | 5-hour rate-limit bar · `%` · reset clock in local time (`HH:MM (Xh Ym)`) | Claude Code JSON |
 | 3 | Weekly rate-limit bar · `%` · reset datetime in local time (`Mon HH:MM (Xd Yh)`) | Claude Code JSON |
@@ -75,7 +75,7 @@ Since 2026-03-27 Anthropic has applied a quota-burn acceleration during weekday 
 
 `claude-statusline` shows `PEAK TIME ends 9:00 PM (2h 14m)` in bold red while the window is open (time in your local timezone and locale's clock style, so you can plan around it). Off-peak, the segment disappears entirely — the status line stays quiet until your quota is actually burning faster.
 
-Hide it even during peak: `export CLAUDE_STATUSLINE_PEAKTIME_HIDDEN=1`.
+The indicator is **opt-in** and disabled by default. Enable it: `export CLAUDE_STATUSLINE_PEAKTIME=1`.
 
 Sources:
 - [TokenCalculator — Claude Peak Hours 2026](https://tokencalculator.com/blog/claude-peak-time-throttle-quota-drains-faster-weekdays-2026)
@@ -93,7 +93,7 @@ All settings are environment variables — set them in your shell rc or pass the
 | `CLAUDE_STATUSLINE_EMPTY_HIDDEN` | `1` | Hide the empty portion of bars. Set to `0` to show them as dim boxes. |
 | `CLAUDE_STATUSLINE_EMPTY_RGB` | `128;128;128` | ANSI RGB triplet for empty-cell color when `EMPTY_HIDDEN=0`. |
 | `CLAUDE_STATUSLINE_SHOW_TZ` | unset | Append the timezone abbreviation (e.g. `CEST`) to reset times. Useful on remote/shared screens. |
-| `CLAUDE_STATUSLINE_PEAKTIME_HIDDEN` | unset | Set to `1` to hide the peak-hours indicator entirely. |
+| `CLAUDE_STATUSLINE_PEAKTIME` | unset | Set to `1` to enable the peak-hours indicator. Disabled by default. |
 | `CLAUDE_STATUSLINE_FORCE_12H` | unset | Force 12-hour clock. Overrides locale. |
 | `CLAUDE_STATUSLINE_FORCE_24H` | unset | Force 24-hour clock. Overrides locale. |
 
@@ -117,6 +117,10 @@ Anthropic has not published the exact window, multiplier, or on/off schedule. Th
 ### Timezone shown is whatever `date` reports
 
 `claude-statusline` uses the system's default timezone (via `date`). If you SSH into a host configured for a different timezone than your laptop, reset clocks and the peak indicator render in the *host's* zone. Fix it with `export TZ=Europe/Berlin` in your shell rc.
+
+### Reset countdowns freeze during long subagent runs
+
+The statusline only re-renders when Claude Code invokes the script with fresh session JSON. While a subagent is running, the parent agent makes no API calls, so Claude Code does not pipe a new payload to `statusline.sh` — the rate-limit percentages and the `(2h 14m)` countdown clocks stay frozen until the subagent returns and the next prompt refresh fires. This is a Claude Code limitation, not a script bug; the reset *clock times* (e.g. `5:42 PM`) remain accurate.
 
 ### macOS `date` does not support every GNU format specifier
 

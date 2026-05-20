@@ -10,7 +10,7 @@ setup() {
     # Isolate from the test host's settings.json effort fallback.
     export HOME="$BATS_TEST_TMPDIR"
     unset CLAUDE_STATUSLINE_DEMO
-    unset CLAUDE_STATUSLINE_PEAKTIME_HIDDEN
+    unset CLAUDE_STATUSLINE_PEAKTIME
     unset CLAUDE_CODE_EFFORT_LEVEL
     unset CLAUDE_STATUSLINE_SHOW_TZ
     unset CLAUDE_STATUSLINE_FORCE_12H
@@ -112,15 +112,15 @@ setup() {
     [[ "$output" == *"100%"* ]]
 }
 
-@test "demo mode renders PEAK TIME label" {
+@test "demo mode renders PEAK TIME label when peaktime opt-in is set" {
     export CLAUDE_STATUSLINE_DEMO=1
+    export CLAUDE_STATUSLINE_PEAKTIME=1
     run bash -c 'echo "{\"cwd\":\"/tmp\",\"model\":{\"display_name\":\"M\"}}" | bash "'"$SCRIPT"'"'
     [[ "$output" == *"PEAK TIME"* ]]
 }
 
-@test "PEAKTIME_HIDDEN suppresses the segment even in demo mode" {
+@test "demo mode hides PEAK TIME by default (opt-in not set)" {
     export CLAUDE_STATUSLINE_DEMO=1
-    export CLAUDE_STATUSLINE_PEAKTIME_HIDDEN=1
     run bash -c 'echo "{\"cwd\":\"/tmp\",\"model\":{\"display_name\":\"M\"}}" | bash "'"$SCRIPT"'"'
     [[ "$output" != *"PEAK TIME"* ]]
 }
@@ -129,6 +129,7 @@ setup() {
 
 @test "line 1 uses ' · ' between cwd and PEAK TIME in demo mode" {
     export CLAUDE_STATUSLINE_DEMO=1
+    export CLAUDE_STATUSLINE_PEAKTIME=1
     run bash -c 'echo "{\"cwd\":\"/tmp\",\"model\":{\"display_name\":\"M\"}}" | bash "'"$SCRIPT"'"'
     line1=$(printf '%s\n' "$output" | head -1)
     [[ "$line1" == *"tmp · PEAK TIME"* ]]
