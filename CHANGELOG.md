@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-05-20
+
+### Added
+
+- Per-window linear forecast bracket `[→XX%]` after the reset clock on the
+  5-hour and weekly rate-limit segments. The number is the linear
+  extrapolation of the current burn rate to the next reset, capped at 999%,
+  and colored with the same gradient as the bars so values above 100% appear
+  in red. On by default; disable with `CLAUDE_STATUSLINE_FORECAST=0`.
+
 ### Changed
 
 - Peak-hours indicator is now opt-in and disabled by default. Enable it with
