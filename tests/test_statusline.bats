@@ -15,6 +15,7 @@ setup() {
     unset CLAUDE_STATUSLINE_SHOW_TZ
     unset CLAUDE_STATUSLINE_FORCE_12H
     unset CLAUDE_STATUSLINE_FORCE_24H
+    unset CLAUDE_STATUSLINE_FORECAST
 }
 
 # --- empty input --------------------------------------------------------
@@ -182,4 +183,19 @@ setup() {
     run bash -c "echo '{\"cwd\":\"/tmp\",\"rate_limits\":{\"seven_day\":{\"used_percentage\":30,\"resets_at\":$reset}}}' | bash '$SCRIPT'"
     [ "$status" -eq 0 ]
     [[ "$output" == *"[→70%]"* ]]
+}
+
+@test "CLAUDE_STATUSLINE_FORECAST=0 suppresses both brackets" {
+    export CLAUDE_STATUSLINE_FORECAST=0
+    local now reset5 reset7
+    now=$(date +%s)
+    reset5=$((now + 7200))
+    reset7=$((now + 4 * 86400))
+    run bash -c "echo '{\"cwd\":\"/tmp\",\"rate_limits\":{\"five_hour\":{\"used_percentage\":45,\"resets_at\":$reset5},\"seven_day\":{\"used_percentage\":30,\"resets_at\":$reset7}}}' | bash '$SCRIPT'"
+    [ "$status" -eq 0 ]
+    # Plain percentages still appear.
+    [[ "$output" == *"45%"* ]]
+    [[ "$output" == *"30%"* ]]
+    # But no forecast brackets.
+    [[ "$output" != *"[→"* ]]
 }
