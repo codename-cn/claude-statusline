@@ -460,10 +460,12 @@ if [ -n "$rl_5h" ]; then
     _color=$(gradient_color_at_pct "$_rl5")
     five_segment="$(rate_limit_bar "$_rl5") ${_color}$(printf '%d%%' "$_rl5")${RESET}"
     [ -n "$rl_5h_reset" ] && five_segment+=" $(format_5h_reset "$rl_5h_reset")"
-    _fcst5=$(compute_forecast "$_rl5" "$rl_5h_reset" "$FORECAST_WINDOW_5H")
-    if [ -n "$_fcst5" ]; then
-        _fcst_color=$(gradient_color_at_pct "$_fcst5")
-        five_segment+=" [${_fcst_color}→${_fcst5}%${RESET}]"
+    if [ "${CLAUDE_STATUSLINE_FORECAST:-1}" = 1 ]; then
+        _fcst5=$(compute_forecast "$_rl5" "$rl_5h_reset" "$FORECAST_WINDOW_5H")
+        if [ -n "$_fcst5" ]; then
+            _fcst_color=$(gradient_color_at_pct "$_fcst5")
+            five_segment+=" [${_fcst_color}→${_fcst5}%${RESET}]"
+        fi
     fi
 fi
 
@@ -473,10 +475,12 @@ if [ -n "$rl_7d" ]; then
     _color=$(gradient_color_at_pct "$_rl7")
     week_segment="$(rate_limit_bar "$_rl7") ${_color}$(printf '%d%%' "$_rl7")${RESET}"
     [ -n "$rl_7d_reset" ] && week_segment+=" $(format_weekly_reset "$rl_7d_reset")"
-    _fcst7=$(compute_forecast "$_rl7" "$rl_7d_reset" "$FORECAST_WINDOW_7D")
-    if [ -n "$_fcst7" ]; then
-        _fcst_color=$(gradient_color_at_pct "$_fcst7")
-        week_segment+=" [${_fcst_color}→${_fcst7}%${RESET}]"
+    if [ "${CLAUDE_STATUSLINE_FORECAST:-1}" = 1 ]; then
+        _fcst7=$(compute_forecast "$_rl7" "$rl_7d_reset" "$FORECAST_WINDOW_7D")
+        if [ -n "$_fcst7" ]; then
+            _fcst_color=$(gradient_color_at_pct "$_fcst7")
+            week_segment+=" [${_fcst_color}→${_fcst7}%${RESET}]"
+        fi
     fi
 fi
 
