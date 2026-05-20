@@ -10,7 +10,7 @@
 ```text
 my-project · feat/new-feature · PEAK TIME ends 9:00 PM (2h 14m)
 Opus 4.7 ● high thinking · 2.1.200 · 1:02 · █████░░░░░░░░░░ 34% 68k/200k
-█████░░░░░░░░░░ 45% 5:42 PM (2h 14m) · █████████░░░░░░ 62% Mon 9:00 AM (2d 14h)
+█████░░░░░░░░░░ 45% 5:42 PM (2h 14m) [→92%] · █████████░░░░░░ 62% Mon 9:00 AM (2d 14h) [→118%]
 ```
 
 Single bash script, no runtime dependencies beyond `bash`, `jq`, and `date`. Works on Linux, macOS, WSL2. Respects [`NO_COLOR`](https://no-color.org/). Locale-aware clock (12h/24h). Configurable via environment variables.
@@ -64,10 +64,20 @@ Then add this to `~/.claude/settings.json`:
 | 1 | Git branch (read from session cwd, not your shell's PWD) | `git -C <cwd>` |
 | 1 | Peak-hours indicator: `PEAK TIME ends HH:MM` (opt-in via `CLAUDE_STATUSLINE_PEAKTIME=1`; only visible during the window) | Computed (UTC → local) |
 | 2 | Model name · effort level (`○ low`, `◐ medium`, `● high`, `◉ xhigh`, `◈ max` — matches Claude Code's own icons) · `thinking` marker · version · session duration · context-window bar | Claude Code JSON |
-| 3 | 5-hour rate-limit bar · `%` · reset clock in local time (`HH:MM (Xh Ym)`) | Claude Code JSON |
-| 3 | Weekly rate-limit bar · `%` · reset datetime in local time (`Mon HH:MM (Xd Yh)`) | Claude Code JSON |
+| 3 | 5-hour rate-limit bar · `%` · reset clock in local time (`HH:MM (Xh Ym)`) · optional forecast bracket `[→XX%]` | Claude Code JSON |
+| 3 | Weekly rate-limit bar · `%` · reset datetime in local time (`Mon HH:MM (Xd Yh)`) · optional forecast bracket `[→XX%]` | Claude Code JSON |
 
 All clocks render in your system timezone. Duration counters are bounded and drop leading zeros for readability.
+
+## About the forecast indicator
+
+Each rate-limit segment on line 3 is followed by a small bracket — `[→92%]`, `[→118%]`, etc. — that shows the **linear forecast** of where the percentage will land at the next reset *if the current burn rate continues unchanged*. The math is simple: `forecast = current% × window_length ÷ time_elapsed`. The window length is fixed (5 hours, 7 days); the time elapsed is derived from the reset timestamp Claude Code provides.
+
+The same gradient as the bars colors the forecast number, so values above 100% jump out in red — that is the moment to slow down or switch to a less expensive model. Values are capped at 999% so a fresh window with a burst of usage doesn't render an unreasonable number; instead you get a saturated red `[→999%]` that says "yes, this rate is way too high, do something".
+
+The indicator is **on by default**. Disable it: `export CLAUDE_STATUSLINE_FORECAST=0`.
+
+Limitations: the script is stateless. There is no smoothing across refreshes, no exponential moving average, and no sliding-window burn rate. A forecast 5 minutes into a fresh 5-hour window is mathematically valid but informationally thin — give it 15–20 minutes before treating the number as steady.
 
 ## About the peak-hours indicator
 
@@ -94,6 +104,7 @@ All settings are environment variables — set them in your shell rc or pass the
 | `CLAUDE_STATUSLINE_EMPTY_RGB` | `128;128;128` | ANSI RGB triplet for empty-cell color when `EMPTY_HIDDEN=0`. |
 | `CLAUDE_STATUSLINE_SHOW_TZ` | unset | Append the timezone abbreviation (e.g. `CEST`) to reset times. Useful on remote/shared screens. |
 | `CLAUDE_STATUSLINE_PEAKTIME` | unset | Set to `1` to enable the peak-hours indicator. Disabled by default. |
+| `CLAUDE_STATUSLINE_FORECAST` | `1` | Set to `0` to hide the `[→XX%]` forecast brackets on line 3. |
 | `CLAUDE_STATUSLINE_FORCE_12H` | unset | Force 12-hour clock. Overrides locale. |
 | `CLAUDE_STATUSLINE_FORCE_24H` | unset | Force 24-hour clock. Overrides locale. |
 
