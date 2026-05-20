@@ -72,6 +72,7 @@ If any of these fail, report the exact output and stop — do not try to "fix" i
 Environment variables recognized by the script are documented in [README.md](./README.md#configuration). Common tweaks:
 
 - `export CLAUDE_STATUSLINE_PEAKTIME=1` — enable the peak-hours indicator (opt-in; disabled by default).
+- `export CLAUDE_STATUSLINE_FORECAST=0` — disable the `[→XX%]` per-window forecast brackets (on by default).
 - `export CLAUDE_STATUSLINE_SHOW_TZ=1` — append timezone abbr to reset clocks.
 - `export CLAUDE_STATUSLINE_BAR_WIDTH=20` — wider bars.
 - `export NO_COLOR=1` — disable color (for screen readers, log files, dumb terminals).

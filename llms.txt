@@ -1,6 +1,6 @@
 # claude-statusline
 
-> Zero-dependency three-line statusline for Anthropic Claude Code. Shows cwd, git branch, context-window fill, 5-hour + weekly rate limits with reset clocks in the user's local timezone, and a peak-hours indicator for Anthropic's weekday 13:00–19:00 UTC quota-burn window. Single bash script, shellcheck-clean, MIT-licensed.
+> Zero-dependency three-line statusline for Anthropic Claude Code. Shows cwd, git branch, context-window fill, 5-hour + weekly rate limits with reset clocks in the user's local timezone, per-window linear forecasts (`[→XX%]`), and a peak-hours indicator for Anthropic's weekday 13:00–19:00 UTC quota-burn window. Single bash script, shellcheck-clean, MIT-licensed.
 
 claude-statusline is the drop-in visual replacement for Claude Code's default single-line prompt footer. It reads the session JSON Claude Code pipes to `statusLine.command` on every refresh, parses it with `jq`, and renders three compact lines with gradient ANSI progress bars. It has no runtime dependencies beyond `bash` (3.2+), `jq`, `git`, and `date`; auto-detects GNU vs BSD `date` for portability; and honors `NO_COLOR`.
 
