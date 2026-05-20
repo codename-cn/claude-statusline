@@ -160,3 +160,15 @@ setup() {
     # NO_COLOR on, filled cells render as '#' and empty as '.'.
     [[ "$output" == *"##..."* ]]
 }
+
+# --- forecast bracket --------------------------------------------------
+
+@test "5h forecast bracket renders by default with a usable reset_ts" {
+    # 45% used, 2h remaining of a 5h window → 3h elapsed → forecast 45*18000/10800 = 75%.
+    local now reset
+    now=$(date +%s)
+    reset=$((now + 7200))
+    run bash -c "echo '{\"cwd\":\"/tmp\",\"rate_limits\":{\"five_hour\":{\"used_percentage\":45,\"resets_at\":$reset}}}' | bash '$SCRIPT'"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[→75%]"* ]]
+}
