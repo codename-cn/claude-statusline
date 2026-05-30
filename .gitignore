@@ -14,6 +14,7 @@ Thumbs.db
 .claude/
 .agent-notes/
 CLAUDE.md
+docs/superpowers/
 
 # Local git worktrees for isolated development
 .worktrees/
