@@ -71,6 +71,7 @@ EMPTY_HIDDEN="${CLAUDE_STATUSLINE_EMPTY_HIDDEN:-1}"
 # glyph renders only when the value is exactly 1.
 BAR_CONTEXT="${CLAUDE_STATUSLINE_BAR_CONTEXT:-1}"
 BAR_5H="${CLAUDE_STATUSLINE_BAR_5H:-1}"
+BAR_WEEKLY="${CLAUDE_STATUSLINE_BAR_WEEKLY:-1}"
 
 # ---------------------------------------------------------------------------
 # Portable date-from-epoch: GNU date uses `-d @N`, BSD/macOS date uses `-r N`.
@@ -486,7 +487,9 @@ week_segment=""
 if [ -n "$rl_7d" ]; then
     _rl7=${rl_7d%.*}
     _color=$(gradient_color_at_pct "$_rl7")
-    week_segment="$(rate_limit_bar "$_rl7") ${_color}$(printf '%d%%' "$_rl7")${RESET}"
+    _bar=""
+    [ "$BAR_WEEKLY" = 1 ] && _bar="$(rate_limit_bar "$_rl7") "
+    week_segment="${_bar}${_color}$(printf '%d%%' "$_rl7")${RESET}"
     [ -n "$rl_7d_reset" ] && week_segment+=" $(format_weekly_reset "$rl_7d_reset")"
     if [ "${CLAUDE_STATUSLINE_FORECAST:-1}" = 1 ]; then
         _fcst7=$(compute_forecast "$_rl7" "$rl_7d_reset" "$FORECAST_WINDOW_7D")

@@ -284,3 +284,26 @@ setup() {
     [[ "$output" == *"45%"* ]]
     [[ "$output" != *"#"* ]]
 }
+
+@test "CLAUDE_STATUSLINE_BAR_WEEKLY=0 hides the weekly bar glyph but keeps the percentage" {
+    export CLAUDE_STATUSLINE_BAR_WEEKLY=0
+    run bash -c 'echo "{\"cwd\":\"/tmp\",\"rate_limits\":{\"seven_day\":{\"used_percentage\":62}}}" | bash "'"$SCRIPT"'"'
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"62%"* ]]
+    [[ "$output" != *"#"* ]]
+}
+
+@test "BAR_5H=0 leaves the weekly bar rendered (toggles are independent)" {
+    export CLAUDE_STATUSLINE_BAR_5H=0
+    run bash -c 'echo "{\"cwd\":\"/tmp\",\"rate_limits\":{\"five_hour\":{\"used_percentage\":45},\"seven_day\":{\"used_percentage\":62}}}" | bash "'"$SCRIPT"'"'
+    [ "$status" -eq 0 ]
+    # Line 3 is "<5h segment> · <weekly segment>". Split on the first " · ".
+    five_part="${output%% · *}"
+    week_part="${output#* · }"
+    # 5h segment lost its glyph...
+    [[ "$five_part" != *"#"* ]]
+    # ...but the weekly segment still has one.
+    [[ "$week_part" == *"#"* ]]
+    [[ "$output" == *"45%"* ]]
+    [[ "$output" == *"62%"* ]]
+}
