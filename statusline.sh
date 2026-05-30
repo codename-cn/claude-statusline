@@ -70,6 +70,7 @@ EMPTY_HIDDEN="${CLAUDE_STATUSLINE_EMPTY_HIDDEN:-1}"
 # forecast bracket stay. Semantics mirror CLAUDE_STATUSLINE_FORECAST: the
 # glyph renders only when the value is exactly 1.
 BAR_CONTEXT="${CLAUDE_STATUSLINE_BAR_CONTEXT:-1}"
+BAR_5H="${CLAUDE_STATUSLINE_BAR_5H:-1}"
 
 # ---------------------------------------------------------------------------
 # Portable date-from-epoch: GNU date uses `-d @N`, BSD/macOS date uses `-r N`.
@@ -468,7 +469,9 @@ five_segment=""
 if [ -n "$rl_5h" ]; then
     _rl5=${rl_5h%.*}
     _color=$(gradient_color_at_pct "$_rl5")
-    five_segment="$(rate_limit_bar "$_rl5") ${_color}$(printf '%d%%' "$_rl5")${RESET}"
+    _bar=""
+    [ "$BAR_5H" = 1 ] && _bar="$(rate_limit_bar "$_rl5") "
+    five_segment="${_bar}${_color}$(printf '%d%%' "$_rl5")${RESET}"
     [ -n "$rl_5h_reset" ] && five_segment+=" $(format_5h_reset "$rl_5h_reset")"
     if [ "${CLAUDE_STATUSLINE_FORECAST:-1}" = 1 ]; then
         _fcst5=$(compute_forecast "$_rl5" "$rl_5h_reset" "$FORECAST_WINDOW_5H")
