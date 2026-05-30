@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   rate-limit bars, line 3). All default to on; set the relevant one to `0`.
   Set all three to `0` to drop every bar.
 
+### Changed
+
+- The forecast bracket `[→XX%]` now sits immediately after each rate-limit
+  percentage, with the reset clock following it (previously the bracket came
+  last, after the reset clock). Reads as `45% [→92%] 5:42 PM (2h 14m)`.
+
 ## [0.2.0] — 2026-05-20
 
 ### Added

@@ -479,7 +479,7 @@ if [ -n "$rl_5h" ]; then
     _bar=""
     [ "$BAR_5H" = 1 ] && _bar="$(rate_limit_bar "$_rl5") "
     five_segment="${_bar}${_color}$(printf '%d%%' "$_rl5")${RESET}"
-    [ -n "$rl_5h_reset" ] && five_segment+=" $(format_5h_reset "$rl_5h_reset")"
+    # Forecast sits right after the percentage; the reset clock follows it.
     if [ "${CLAUDE_STATUSLINE_FORECAST:-1}" = 1 ]; then
         _fcst5=$(compute_forecast "$_rl5" "$rl_5h_reset" "$FORECAST_WINDOW_5H")
         if [ -n "$_fcst5" ]; then
@@ -487,6 +487,7 @@ if [ -n "$rl_5h" ]; then
             five_segment+=" [${_fcst_color}→${_fcst5}%${RESET}]"
         fi
     fi
+    [ -n "$rl_5h_reset" ] && five_segment+=" $(format_5h_reset "$rl_5h_reset")"
 fi
 
 week_segment=""
@@ -496,7 +497,7 @@ if [ -n "$rl_7d" ]; then
     _bar=""
     [ "$BAR_WEEKLY" = 1 ] && _bar="$(rate_limit_bar "$_rl7") "
     week_segment="${_bar}${_color}$(printf '%d%%' "$_rl7")${RESET}"
-    [ -n "$rl_7d_reset" ] && week_segment+=" $(format_weekly_reset "$rl_7d_reset")"
+    # Forecast sits right after the percentage; the reset clock follows it.
     if [ "${CLAUDE_STATUSLINE_FORECAST:-1}" = 1 ]; then
         _fcst7=$(compute_forecast "$_rl7" "$rl_7d_reset" "$FORECAST_WINDOW_7D")
         if [ -n "$_fcst7" ]; then
@@ -504,6 +505,7 @@ if [ -n "$rl_7d" ]; then
             week_segment+=" [${_fcst_color}→${_fcst7}%${RESET}]"
         fi
     fi
+    [ -n "$rl_7d_reset" ] && week_segment+=" $(format_weekly_reset "$rl_7d_reset")"
 fi
 
 peaktime_segment=$(render_peaktime_segment)

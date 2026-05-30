@@ -188,6 +188,19 @@ setup() {
     [[ "$output" == *"[→70%]"* ]]
 }
 
+@test "forecast bracket sits immediately after the percentage, before the reset clock" {
+    # 5h: 45% used, 2h left of 5h → forecast 75%. Weekly: 30% used, 4d left of 7d → forecast 70%.
+    local now reset5 reset7
+    now=$(date +%s)
+    reset5=$((now + 7200))
+    reset7=$((now + 4 * 86400))
+    run bash -c "echo '{\"cwd\":\"/tmp\",\"rate_limits\":{\"five_hour\":{\"used_percentage\":45,\"resets_at\":$reset5},\"seven_day\":{\"used_percentage\":30,\"resets_at\":$reset7}}}' | bash '$SCRIPT'"
+    [ "$status" -eq 0 ]
+    # Forecast follows the percentage directly, with the reset clock after it.
+    [[ "$output" == *"45% [→75%]"* ]]
+    [[ "$output" == *"30% [→70%]"* ]]
+}
+
 @test "CLAUDE_STATUSLINE_FORECAST=0 suppresses both brackets" {
     export CLAUDE_STATUSLINE_FORECAST=0
     local now reset5 reset7
