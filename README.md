@@ -5,12 +5,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![shellcheck](https://img.shields.io/badge/shellcheck-clean-brightgreen.svg)](https://www.shellcheck.net/)
 
-**A zero-dependency three-line statusline for [Claude Code](https://claude.com/claude-code)** — shows your cwd, git branch, context-window fill, 5-hour + weekly rate limits with reset clocks in *your* timezone, and a live **peak-hours indicator** that tells you when Claude's weekday quota-burn window is active so you can plan your heavy prompts accordingly.
+**A zero-dependency three-line statusline for [Claude Code](https://claude.com/claude-code)** — shows your cwd, git branch, context-window fill, and 5-hour + weekly rate limits with reset clocks in *your* timezone. Each rate-limit segment carries a **burn-rate forecast** (`[→92%]`) of where you'll land by the next reset, and an opt-in **peak-hours indicator** flags Anthropic's weekday quota-burn window so you can plan heavy prompts around it. Every progress bar can be toggled on or off individually.
 
 ```text
 my-project · feat/new-feature · PEAK TIME ends 9:00 PM (2h 14m)
-Opus 4.7 ● high thinking · 2.1.200 · 1:02 · █████░░░░░░░░░░ 34% 68k/200k
-█████░░░░░░░░░░ 45% 5:42 PM (2h 14m) [→92%] · █████████░░░░░░ 62% Mon 9:00 AM (2d 14h) [→118%]
+Opus 4.8 ● high thinking · 2.1.200 · 1:02 · █████░░░░░░░░░░ 34% 68k/200k
+█████░░░░░░░░░░ 45% [→92%] 5:42 PM (2h 14m) · █████████░░░░░░ 62% [→118%] Mon 9:00 AM (2d 14h)
 ```
 
 Single bash script, no runtime dependencies beyond `bash`, `jq`, and `date`. Works on Linux, macOS, WSL2. Respects [`NO_COLOR`](https://no-color.org/). Locale-aware clock (12h/24h). Configurable via environment variables.
@@ -64,14 +64,14 @@ Then add this to `~/.claude/settings.json`:
 | 1 | Git branch (read from session cwd, not your shell's PWD) | `git -C <cwd>` |
 | 1 | Peak-hours indicator: `PEAK TIME ends HH:MM` (opt-in via `CLAUDE_STATUSLINE_PEAKTIME=1`; only visible during the window) | Computed (UTC → local) |
 | 2 | Model name · effort level (`○ low`, `◐ medium`, `● high`, `◉ xhigh`, `◈ max` — matches Claude Code's own icons) · `thinking` marker · version · session duration · context-window bar | Claude Code JSON |
-| 3 | 5-hour rate-limit bar · `%` · reset clock in local time (`HH:MM (Xh Ym)`) · optional forecast bracket `[→XX%]` | Claude Code JSON |
-| 3 | Weekly rate-limit bar · `%` · reset datetime in local time (`Mon HH:MM (Xd Yh)`) · optional forecast bracket `[→XX%]` | Claude Code JSON |
+| 3 | 5-hour rate-limit bar · `%` · optional forecast bracket `[→XX%]` · reset clock in local time (`HH:MM (Xh Ym)`) | Claude Code JSON |
+| 3 | Weekly rate-limit bar · `%` · optional forecast bracket `[→XX%]` · reset datetime in local time (`Mon HH:MM (Xd Yh)`) | Claude Code JSON |
 
 All clocks render in your system timezone. Duration counters are bounded and drop leading zeros for readability.
 
 ## About the forecast indicator
 
-Each rate-limit segment on line 3 is followed by a small bracket — `[→92%]`, `[→118%]`, etc. — that shows the **linear forecast** of where the percentage will land at the next reset *if the current burn rate continues unchanged*. The math is simple: `forecast = current% × window_length ÷ time_elapsed`. The window length is fixed (5 hours, 7 days); the time elapsed is derived from the reset timestamp Claude Code provides.
+Each rate-limit percentage on line 3 is immediately followed by a small bracket — `[→92%]`, `[→118%]`, etc. — that shows the **linear forecast** of where the percentage will land at the next reset *if the current burn rate continues unchanged*. The reset clock comes right after the bracket. The math is simple: `forecast = current% × window_length ÷ time_elapsed`. The window length is fixed (5 hours, 7 days); the time elapsed is derived from the reset timestamp Claude Code provides.
 
 The same gradient as the bars colors the forecast number, so values above 100% jump out in red — that is the moment to slow down or switch to a less expensive model. Values are capped at 999% so a fresh window with a burst of usage doesn't render an unreasonable number; instead you get a saturated red `[→999%]` that says "yes, this rate is way too high, do something".
 
@@ -92,9 +92,31 @@ Sources:
 - [The Register — Anthropic admits Claude Code quotas running out too fast](https://www.theregister.com/2026/03/31/anthropic_claude_code_limits/)
 - [TechRadar — Claude is limiting usage more aggressively during peak hours](https://www.techradar.com/ai-platforms-assistants/claude/claude-is-limiting-usage-more-aggressively-during-peak-hours-heres-what-changed)
 
+## About the progress bars
+
+Three gradient bars visualize fill levels: the context-window bar on line 2, and the 5-hour and weekly rate-limit bars on line 3. Each one can be hidden **individually** — handy if you prefer a denser, number-only readout, or if the gradient glyphs render poorly on your terminal.
+
+Hiding a bar removes **only** the `█████░░` glyph. The percentage, token count, reset clock, and forecast bracket all stay put:
+
+All bars on (default):
+
+```text
+Opus 4.8 ● high thinking · 2.1.200 · 1:02 · █████░░░░░░░░░░ 34% 68k/200k
+█████░░░░░░░░░░ 45% [→92%] 5:42 PM (2h 14m) · █████████░░░░░░ 62% [→118%] Mon 9:00 AM (2d 14h)
+```
+
+All bars off (`CLAUDE_STATUSLINE_BAR_CONTEXT=0`, `CLAUDE_STATUSLINE_BAR_5H=0`, `CLAUDE_STATUSLINE_BAR_WEEKLY=0`):
+
+```text
+Opus 4.8 ● high thinking · 2.1.200 · 1:02 · 34% 68k/200k
+45% [→92%] 5:42 PM (2h 14m) · 62% [→118%] Mon 9:00 AM (2d 14h)
+```
+
+Each toggle defaults to **on**; set the relevant variable to `0` to hide just that bar, or all three to drop every bar. The variable names are in the [configuration table](#configuration) below, and ready-to-paste combinations are in [Recipes](#recipes).
+
 ## Configuration
 
-All settings are environment variables — set them in your shell rc or pass them through `settings.json` via a wrapper. Everything has a sensible default.
+All settings are environment variables. Set them in your shell rc (`export NAME=value`) or — more reliably — in the `env` block of `~/.claude/settings.json`, which Claude Code applies directly to the statusline's environment (see [Recipes](#recipes)). Everything has a sensible default.
 
 | Variable | Default | Effect |
 |---|---|---|
@@ -110,6 +132,53 @@ All settings are environment variables — set them in your shell rc or pass the
 | `CLAUDE_STATUSLINE_BAR_WEEKLY` | `1` | Set to `0` to hide the weekly bar glyph (line 3). Percentage and reset clock stay. |
 | `CLAUDE_STATUSLINE_FORCE_12H` | unset | Force 12-hour clock. Overrides locale. |
 | `CLAUDE_STATUSLINE_FORCE_24H` | unset | Force 24-hour clock. Overrides locale. |
+
+## Recipes
+
+Apply any variable either as a shell export or in the `env` block of `~/.claude/settings.json`. The `env` block is the more reliable of the two, because Claude Code applies it to the statusline's environment regardless of how your shell was launched:
+
+```json
+{
+  "env": {
+    "CLAUDE_STATUSLINE_BAR_CONTEXT": "0",
+    "CLAUDE_STATUSLINE_BAR_5H": "0",
+    "CLAUDE_STATUSLINE_BAR_WEEKLY": "0"
+  }
+}
+```
+
+The setups below are shown as shell exports; the same names and values work verbatim as `env` keys (with the value quoted as a string).
+
+**Number-only — hide every bar:**
+
+```sh
+export CLAUDE_STATUSLINE_BAR_CONTEXT=0
+export CLAUDE_STATUSLINE_BAR_5H=0
+export CLAUDE_STATUSLINE_BAR_WEEKLY=0
+```
+
+**Keep only the context bar** (drop the two rate-limit bars):
+
+```sh
+export CLAUDE_STATUSLINE_BAR_5H=0
+export CLAUDE_STATUSLINE_BAR_WEEKLY=0
+```
+
+**Quota-watcher — wider bars, peak indicator on, forecast off:**
+
+```sh
+export CLAUDE_STATUSLINE_BAR_WIDTH=24
+export CLAUDE_STATUSLINE_PEAKTIME=1
+export CLAUDE_STATUSLINE_FORECAST=0
+```
+
+**Monochrome / screen-reader friendly:**
+
+```sh
+export NO_COLOR=1
+```
+
+The default — nothing set — shows all three bars and the forecast brackets, and keeps the peak-hours indicator hidden.
 
 ## Platform support
 
