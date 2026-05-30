@@ -297,9 +297,11 @@ setup() {
     export CLAUDE_STATUSLINE_BAR_5H=0
     run bash -c 'echo "{\"cwd\":\"/tmp\",\"rate_limits\":{\"five_hour\":{\"used_percentage\":45},\"seven_day\":{\"used_percentage\":62}}}" | bash "'"$SCRIPT"'"'
     [ "$status" -eq 0 ]
-    # Line 3 is "<5h segment> · <weekly segment>". Split on the first " · ".
-    five_part="${output%% · *}"
-    week_part="${output#* · }"
+    # Line 3 is "<5h segment> · <weekly segment>". Take the last output line,
+    # then split it on " · " so line-1 content can never affect the split.
+    line3="${output##*$'\n'}"
+    five_part="${line3%% · *}"
+    week_part="${line3#* · }"
     # 5h segment lost its glyph...
     [[ "$five_part" != *"#"* ]]
     # ...but the weekly segment still has one.
