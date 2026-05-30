@@ -73,6 +73,9 @@ Environment variables recognized by the script are documented in [README.md](./R
 
 - `export CLAUDE_STATUSLINE_PEAKTIME=1` — enable the peak-hours indicator (opt-in; disabled by default).
 - `export CLAUDE_STATUSLINE_FORECAST=0` — disable the `[→XX%]` per-window forecast brackets (on by default).
+- `export CLAUDE_STATUSLINE_BAR_CONTEXT=0` — hide the context-window bar glyph (on by default; percentage stays).
+- `export CLAUDE_STATUSLINE_BAR_5H=0` — hide the 5-hour bar glyph (on by default; percentage stays).
+- `export CLAUDE_STATUSLINE_BAR_WEEKLY=0` — hide the weekly bar glyph (on by default; percentage stays).
 - `export CLAUDE_STATUSLINE_SHOW_TZ=1` — append timezone abbr to reset clocks.
 - `export CLAUDE_STATUSLINE_BAR_WIDTH=20` — wider bars.
 - `export NO_COLOR=1` — disable color (for screen readers, log files, dumb terminals).

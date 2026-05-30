@@ -25,6 +25,12 @@
 #   CLAUDE_STATUSLINE_FORECAST=0        Suppress the per-window forecast bracket
 #                                       [→XX%] on the 5h and weekly segments
 #                                       (default: shown).
+#   CLAUDE_STATUSLINE_BAR_CONTEXT=0     Hide the context-window bar glyph
+#                                       (default: shown; % + tokens stay).
+#   CLAUDE_STATUSLINE_BAR_5H=0          Hide the 5-hour bar glyph
+#                                       (default: shown; % + reset stay).
+#   CLAUDE_STATUSLINE_BAR_WEEKLY=0      Hide the weekly bar glyph
+#                                       (default: shown; % + reset stay).
 #   CLAUDE_STATUSLINE_FORCE_12H=1       Force 12-hour clock (default: follow locale).
 #   CLAUDE_STATUSLINE_FORCE_24H=1       Force 24-hour clock (default: follow locale).
 #   CLAUDE_STATUSLINE_DEMO=1            Demo mode: override all quota %, reset
