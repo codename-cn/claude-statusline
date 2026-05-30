@@ -276,3 +276,11 @@ setup() {
     [[ "$output" == *"68k/200k"* ]]
     [[ "$output" != *"#"* ]]
 }
+
+@test "CLAUDE_STATUSLINE_BAR_5H=0 hides the 5h bar glyph but keeps the percentage" {
+    export CLAUDE_STATUSLINE_BAR_5H=0
+    run bash -c 'echo "{\"cwd\":\"/tmp\",\"rate_limits\":{\"five_hour\":{\"used_percentage\":45}}}" | bash "'"$SCRIPT"'"'
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"45%"* ]]
+    [[ "$output" != *"#"* ]]
+}
