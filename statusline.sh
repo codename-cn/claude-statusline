@@ -65,6 +65,12 @@ BAR_WIDTH="${CLAUDE_STATUSLINE_BAR_WIDTH:-15}"
 EMPTY_RGB="${CLAUDE_STATUSLINE_EMPTY_RGB:-128;128;128}"
 EMPTY_HIDDEN="${CLAUDE_STATUSLINE_EMPTY_HIDDEN:-1}"
 
+# Per-bar visibility toggles. Each defaults to 1 (shown); set to 0 to hide
+# just that bar's glyph — the percentage, token label, reset clock and
+# forecast bracket stay. Semantics mirror CLAUDE_STATUSLINE_FORECAST: the
+# glyph renders only when the value is exactly 1.
+BAR_CONTEXT="${CLAUDE_STATUSLINE_BAR_CONTEXT:-1}"
+
 # ---------------------------------------------------------------------------
 # Portable date-from-epoch: GNU date uses `-d @N`, BSD/macOS date uses `-r N`.
 # Detected once, called everywhere.
@@ -416,13 +422,14 @@ if [ -n "$ctx_pct" ]; then
         _token_label="$(format_tokens "$_used")/$(format_tokens "$ctx_total")"
     fi
 
-    _bar=$(render_gradient_bar "$_filled" "$BAR_WIDTH")
+    _bar=""
+    [ "$BAR_CONTEXT" = 1 ] && _bar="$(render_gradient_bar "$_filled" "$BAR_WIDTH") "
     _color=$(gradient_color_at_pct "$ctx_pct")
     _fmt_pct=$(printf '%d%%' "$ctx_pct")
     if [ -n "$_token_label" ]; then
-        context_bar="${_bar} ${_color}${_fmt_pct}${RESET} ${_token_label}"
+        context_bar="${_bar}${_color}${_fmt_pct}${RESET} ${_token_label}"
     else
-        context_bar="${_bar} ${_color}${_fmt_pct}${RESET}"
+        context_bar="${_bar}${_color}${_fmt_pct}${RESET}"
     fi
 fi
 

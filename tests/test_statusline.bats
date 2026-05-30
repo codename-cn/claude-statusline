@@ -16,6 +16,9 @@ setup() {
     unset CLAUDE_STATUSLINE_FORCE_12H
     unset CLAUDE_STATUSLINE_FORCE_24H
     unset CLAUDE_STATUSLINE_FORECAST
+    unset CLAUDE_STATUSLINE_BAR_CONTEXT
+    unset CLAUDE_STATUSLINE_BAR_5H
+    unset CLAUDE_STATUSLINE_BAR_WEEKLY
 }
 
 # --- empty input --------------------------------------------------------
@@ -254,4 +257,22 @@ setup() {
     [[ "$output" == *"[→75%]"* ]]
     esc=$(printf '\033')
     [[ "$output" != *"$esc"* ]]
+}
+
+# --- per-bar visibility toggles ----------------------------------------
+
+@test "context bar glyph renders by default" {
+    run bash -c 'echo "{\"cwd\":\"/tmp\",\"context_window\":{\"used_percentage\":34,\"context_window_size\":200000}}" | bash "'"$SCRIPT"'"'
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"#"* ]]
+    [[ "$output" == *"34%"* ]]
+}
+
+@test "CLAUDE_STATUSLINE_BAR_CONTEXT=0 hides the context bar glyph but keeps the percentage" {
+    export CLAUDE_STATUSLINE_BAR_CONTEXT=0
+    run bash -c 'echo "{\"cwd\":\"/tmp\",\"context_window\":{\"used_percentage\":34,\"context_window_size\":200000}}" | bash "'"$SCRIPT"'"'
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"34%"* ]]
+    [[ "$output" == *"68k/200k"* ]]
+    [[ "$output" != *"#"* ]]
 }
