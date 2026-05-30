@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-05-30
+
+### Added
+
+- Per-bar visibility toggles. Hide an individual progress-bar glyph while
+  keeping its percentage, token count, reset clock and forecast bracket:
+  `CLAUDE_STATUSLINE_BAR_CONTEXT=0` (context-window bar, line 2),
+  `CLAUDE_STATUSLINE_BAR_5H=0` and `CLAUDE_STATUSLINE_BAR_WEEKLY=0` (the two
+  rate-limit bars, line 3). All default to on; set the relevant one to `0`.
+  Set all three to `0` to drop every bar.
+
 ## [0.2.0] — 2026-05-20
 
 ### Added

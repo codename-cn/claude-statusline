@@ -105,6 +105,9 @@ All settings are environment variables — set them in your shell rc or pass the
 | `CLAUDE_STATUSLINE_SHOW_TZ` | unset | Append the timezone abbreviation (e.g. `CEST`) to reset times. Useful on remote/shared screens. |
 | `CLAUDE_STATUSLINE_PEAKTIME` | unset | Set to `1` to enable the peak-hours indicator. Disabled by default. |
 | `CLAUDE_STATUSLINE_FORECAST` | `1` | Set to `0` to hide the `[→XX%]` forecast brackets on line 3. |
+| `CLAUDE_STATUSLINE_BAR_CONTEXT` | `1` | Set to `0` to hide the context-window bar glyph (line 2). Percentage and token count stay. |
+| `CLAUDE_STATUSLINE_BAR_5H` | `1` | Set to `0` to hide the 5-hour bar glyph (line 3). Percentage and reset clock stay. |
+| `CLAUDE_STATUSLINE_BAR_WEEKLY` | `1` | Set to `0` to hide the weekly bar glyph (line 3). Percentage and reset clock stay. |
 | `CLAUDE_STATUSLINE_FORCE_12H` | unset | Force 12-hour clock. Overrides locale. |
 | `CLAUDE_STATUSLINE_FORCE_24H` | unset | Force 24-hour clock. Overrides locale. |
 
