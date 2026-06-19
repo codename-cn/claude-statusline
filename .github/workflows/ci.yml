@@ -10,7 +10,7 @@ jobs:
   shellcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Run shellcheck
         run: |
           shellcheck --version
@@ -19,7 +19,7 @@ jobs:
   shfmt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install shfmt
         run: |
           curl -fsSL -o /usr/local/bin/shfmt \
@@ -31,7 +31,7 @@ jobs:
   smoke-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Smoke test with synthetic payload
         run: |
           set -euo pipefail
@@ -61,7 +61,7 @@ jobs:
   smoke-macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Smoke test with synthetic payload
         run: |
           set -euo pipefail
@@ -83,7 +83,7 @@ jobs:
   bats:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install jq + bats
         run: |
           sudo apt-get update
