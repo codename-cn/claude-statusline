@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # claude-statusline — a three-line statusline for Claude Code
-# https://github.com/codename-cn/claude-statusline
+# https://github.com/evrenverse/claude-statusline
 #
 # Renders on every prompt refresh:
 #   Line 1: cwd · git branch · PEAKTIME indicator (opt-in via

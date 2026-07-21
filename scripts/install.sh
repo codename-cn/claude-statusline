@@ -2,7 +2,7 @@
 #
 # claude-statusline installer
 #
-#   curl -fsSL https://raw.githubusercontent.com/codename-cn/claude-statusline/main/scripts/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/evrenverse/claude-statusline/main/scripts/install.sh | bash
 #
 # Downloads statusline.sh to ~/.claude/statusline.sh and patches
 # ~/.claude/settings.json with the statusLine entry — backing up any
@@ -16,7 +16,7 @@
 
 set -euo pipefail
 
-REPO_SLUG="codename-cn/claude-statusline"
+REPO_SLUG="evrenverse/claude-statusline"
 REF="${CLAUDE_STATUSLINE_REF:-main}"
 RAW_BASE="https://raw.githubusercontent.com/${REPO_SLUG}/${REF}"
 
@@ -143,5 +143,5 @@ Next steps:
   1. Open a new Claude Code session (or restart the one you have).
   2. The three-line statusline will appear at the bottom of the prompt.
   3. Customize via env vars — see:
-     https://github.com/codename-cn/claude-statusline#configuration
+     https://github.com/evrenverse/claude-statusline#configuration
 EOT

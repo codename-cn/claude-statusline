@@ -21,7 +21,7 @@ claude-statusline's AGENTS.md exactly. Specifically:
    exists). If not, direct me to https://claude.com/claude-code and stop.
 3. Download the statusline script:
       mkdir -p ~/.claude
-      curl -fsSL https://raw.githubusercontent.com/codename-cn/claude-statusline/main/statusline.sh \
+      curl -fsSL https://raw.githubusercontent.com/evrenverse/claude-statusline/main/statusline.sh \
           -o ~/.claude/statusline.sh
       chmod +x ~/.claude/statusline.sh
 4. Patch ~/.claude/settings.json to register the statusline:

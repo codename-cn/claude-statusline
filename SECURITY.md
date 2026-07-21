@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Please report suspected vulnerabilities by opening a [GitHub Security Advisory](https://github.com/codename-cn/claude-statusline/security/advisories/new) on the repo — not a public issue. We'll triage within one week.
+Please report suspected vulnerabilities by opening a [GitHub Security Advisory](https://github.com/evrenverse/claude-statusline/security/advisories/new) on the repo — not a public issue. We'll triage within one week.
 
 ## Scope
 

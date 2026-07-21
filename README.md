@@ -1,6 +1,6 @@
 # claude-statusline
 
-[![CI](https://github.com/codename-cn/claude-statusline/actions/workflows/ci.yml/badge.svg)](https://github.com/codename-cn/claude-statusline/actions/workflows/ci.yml)
+[![CI](https://github.com/evrenverse/claude-statusline/actions/workflows/ci.yml/badge.svg)](https://github.com/evrenverse/claude-statusline/actions/workflows/ci.yml)
 [![Shell: bash 3.2+](https://img.shields.io/badge/bash-3.2%2B-1f425f.svg)](https://www.gnu.org/software/bash/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![shellcheck](https://img.shields.io/badge/shellcheck-clean-brightgreen.svg)](https://www.shellcheck.net/)
@@ -29,7 +29,7 @@ Requires `bash` (3.2+), `jq`, `git`, a truecolor-capable terminal, and Claude Co
 **1. One-liner install** (downloads the script to `~/.claude/statusline.sh` and patches `~/.claude/settings.json` after confirmation):
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/codename-cn/claude-statusline/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/evrenverse/claude-statusline/main/scripts/install.sh | bash
 ```
 
 **2. Reload Claude Code** (or start a new session). That's it.
@@ -40,7 +40,7 @@ If you'd rather not pipe `curl` to `bash`:
 
 ```sh
 mkdir -p ~/.claude
-curl -fsSL https://raw.githubusercontent.com/codename-cn/claude-statusline/main/statusline.sh \
+curl -fsSL https://raw.githubusercontent.com/evrenverse/claude-statusline/main/statusline.sh \
     -o ~/.claude/statusline.sh
 chmod +x ~/.claude/statusline.sh
 ```
@@ -215,7 +215,7 @@ Issues and PRs welcome. Please run `shellcheck statusline.sh` before opening a P
 
 ---
 
-> ⭐ **If you find this useful, [star the repo](https://github.com/codename-cn/claude-statusline)** — it helps other Claude Code users discover it.
+> ⭐ **If you find this useful, [star the repo](https://github.com/evrenverse/claude-statusline)** — it helps other Claude Code users discover it.
 
 ## License
 
